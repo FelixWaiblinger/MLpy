@@ -10,6 +10,8 @@ setup(
     license='',
     packages=find_packages(),
     install_requires=[
+        #'shutils',
+        'requests',
         'numpy==1.16',
         'python-mnist'
     ],
