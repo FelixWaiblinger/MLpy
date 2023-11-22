@@ -3,18 +3,61 @@ Module containing a range of model types and architectures commonly used in
     machine learning applications.
 """
 
+import os
+from abc import ABC, abstractmethod
 
+import pickle
 import numpy as np
 from numpy.random import uniform
 
+from ml_lib_py.networks.layer import Dense
+from networks.loss import MSE
+
+
+class Sequential(ABC):
+    def __init__(self, model_name=None) -> None:
+        self.name = "Model" if model_name is None else model_name
+
+    @abstractmethod
+    def forward(self, x):
+        """"""
+
+    @abstractmethod
+    def backward(self, x):
+        """"""
+    
+    @abstractmethod
+    def save_model(self):
+        """"""
+
+
+# Nearest-neighbor classifier ------------------------------------------------
+class NNclassifier():
+    def __init__(self, k, dist_func=MSE, weighted=False) -> None:
+        self._k = k
+        self._dist_func = dist_func
+        self._weighted = weighted
+
+
+    def forward(self, x: np.array) -> np.array:
+        pass
+
+
+# Nearest-neighbor regressor ------------------------------------------------
+class NNregressor():
+    pass
+
 
 # Multi-layer perceptron -----------------------------------------------------
-class Perceptron():
-    def __init__(self, layers=None, input_size=None):
-        self.layers = layers if layers is not None else []
-        self.weights = [np.array([[]]) for _ in self.layers]
-        self.biases = [np.array([]) for _ in self.layers]
-        self.input_size = input_size
+class Perceptron(Sequential):
+    def __init__(self, size_in, size_out=1, num_hidden=1, num_units=10, **kwargs):
+        super().__init__(kwargs)
+
+        units_out = num_units if type(num_units) is [] else [num_units] * num_hidden
+        self.layers = [Dense(size_in, out[0])]
+        for i, out in enumerate(units_out):
+            self.layers.append(Dense(units_out[i - 1], out))
+        self.layers.append(Dense(units_out[-1], size_out))
         self.loss = None
         self.learning_rate = 1
         self.metric = None
@@ -67,7 +110,7 @@ class Perceptron():
         predictions = []
         print("Training --------------------------")
         for e in range(epochs):
-            print "Epoch "+str(e+1)+":",
+            print("Epoch "+str(e+1)+":")
             for sample, target in zip(x, y):
                 # perform forward pass
                 predictions.append(self.predict(sample, save=True))
@@ -105,7 +148,7 @@ class Perceptron():
         out = delete + loss + progress
         self.print_length = len(out)+2
 
-        print out,
+        print(out)
 
         # if self.metric is not None:
         #     idx_predictions = np.array([list(p).index(p.max()) for p in predictions])
@@ -113,7 +156,11 @@ class Perceptron():
         #     current_accuracy = self.metric(idx_predictions, idx_targets)
         #     out = out + ", {}={:.2f}".format(self.metric.__name__, current_accuracy)
 
+    def save_model(self):
+        directory = 'models'
+        model = {self.model_name: self}
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        pickle.dump(model, open(directory + '/' +
+                                self.model_name + '.p', 'wb'))
 
-# Nearest-neighbor classifier ------------------------------------------------
-class NNclassifier():
-    pass

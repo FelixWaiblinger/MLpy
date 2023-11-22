@@ -1,10 +1,10 @@
 """
-loss
+datasets
 
 Some description
 """
 
-from .loss import mean_squared_error, categorical_crossentropy
+from datasets import load_mnist, one_hot
 
 __version__ = '0.1.0'
 __author__ = 'Felix Waiblinger'

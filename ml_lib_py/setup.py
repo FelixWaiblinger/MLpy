@@ -10,10 +10,7 @@ setup(
     license='',
     packages=find_packages(),
     install_requires=[
-        #'shutils',
-        'requests',
-        'numpy==1.16',
-        'python-mnist'
+        'numpy'
     ],
     python_requires='<3',
     classifiers=[
@@ -21,7 +18,7 @@ setup(
         'Intended Audience :: Science/Research',
         'License :: OSI Approved :: BSD License',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7'
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.10'
     ]
 )

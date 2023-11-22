@@ -5,22 +5,22 @@ Module containing a range of example use cases of neural network applications
 
 
 import os
-from ml_lib_py.models import Perceptron
-from ml_lib_py.layers import Dense
-from ml_lib_py.activations import sigmoid, softmax
-from ml_lib_py.loss import categorical_crossentropy
-from ml_lib_py.metrics import accuracy
-from ml_lib_py.datasets import load_mnist
+from ml_lib_py.networks.model import Perceptron
+from ml_lib_py.networks.layer import Dense, Sigmoid
+# from networks.activations import sigmoid, softmax
+from networks.loss import categorical_crossentropy
+from evaluation import accuracy
+from data import load_mnist
 
 
 def mlp_classify_mnist():
     # define model architecture
     mlp = Perceptron(input_size=784)
 
-    mlp.add_layer(Dense(units=784, a_func=sigmoid)) # input
-    mlp.add_layer(Dense(units=128, a_func=sigmoid)) # hidden 1
-    mlp.add_layer(Dense(units=32, a_func=sigmoid)) # hidden 2
-    mlp.add_layer(Dense(units=10, a_func=softmax)) # output
+    # mlp.add_layer(Dense(units=784, a_func=sigmoid)) # input
+    # mlp.add_layer(Dense(units=128, a_func=sigmoid)) # hidden 1
+    # mlp.add_layer(Dense(units=32, a_func=sigmoid)) # hidden 2
+    # mlp.add_layer(Dense(units=10, a_func=softmax)) # output
 
     mlp.compile(loss=categorical_crossentropy, lr=0.01)
 

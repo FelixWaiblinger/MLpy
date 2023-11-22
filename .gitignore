@@ -1,5 +1,2 @@
 # python generated files
 *.pyc
-
-# virtual environment
-.venv/
