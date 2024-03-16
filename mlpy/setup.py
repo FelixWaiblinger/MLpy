@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='ml_lib_py',
+    name='mlpy',
     version='0.1.0',
     description='some description',
-    url='https://github.com/FelixWaiblinger/ml-lib-py',
+    url='https://github.com/FelixWaiblinger/MLpy',
     author='Felix Waiblinger',
     author_email='felix.waiblinger@gmail.com',
     license='',
@@ -19,6 +19,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.10'
+        'Programming Language :: Python :: 3.12'
     ]
 )

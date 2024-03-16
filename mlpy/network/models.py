@@ -1,56 +1,39 @@
-"""
-Module containing a range of model types and architectures commonly used in
-    machine learning applications.
-"""
+"""Common model architectures used in machine / deep learning applications."""
 
 import os
-from abc import ABC, abstractmethod
 
 import pickle
 import numpy as np
-from numpy.random import uniform
 
-from ml_lib_py.networks.layer import Dense
-from networks.loss import MSE
-
-
-class Sequential(ABC):
-    def __init__(self, model_name=None) -> None:
-        self.name = "Model" if model_name is None else model_name
-
-    @abstractmethod
-    def forward(self, x):
-        """"""
-
-    @abstractmethod
-    def backward(self, x):
-        """"""
-    
-    @abstractmethod
-    def save_model(self):
-        """"""
+from mlpy.types import Network, Layer
+from mlpy.network.layers import Dense, Conv1D, Conv2D, Sigmoid, ReLU
 
 
-# Nearest-neighbor classifier ------------------------------------------------
-class NNclassifier():
-    def __init__(self, k, dist_func=MSE, weighted=False) -> None:
-        self._k = k
-        self._dist_func = dist_func
-        self._weighted = weighted
+# ----------------------------------------------------------------- Sequential
+class Sequential(Network):
+    def __init__(self, **kwargs) -> None:
+        """TODO"""
+
+        super().__init__(**kwargs)
+        self.layers = []
+
+    def append(self, layer: Layer) -> None:
+        """TODO"""
+
+        self.layers.append(layer)
 
 
-    def forward(self, x: np.array) -> np.array:
-        pass
+# ----------------------------------------------------- Multi-layer perceptron
+class Perceptron(Network):
+    def __init__(self,
+            shape_in: int,
+            shape_out: int,
+            num_hidden: int,
+            num_units: int | list,
+            **kwargs
+    ) -> None:
+        """TODO"""
 
-
-# Nearest-neighbor regressor ------------------------------------------------
-class NNregressor():
-    pass
-
-
-# Multi-layer perceptron -----------------------------------------------------
-class Perceptron(Sequential):
-    def __init__(self, size_in, size_out=1, num_hidden=1, num_units=10, **kwargs):
         super().__init__(kwargs)
 
         units_out = num_units if type(num_units) is [] else [num_units] * num_hidden
@@ -60,15 +43,8 @@ class Perceptron(Sequential):
         self.layers.append(Dense(units_out[-1], size_out))
         self.loss = None
         self.learning_rate = 1
-        self.metric = None
-
-        self._x = [] # x
-        self._c = [] # w * x + b
-        self._a = [] # a_func(_c)
-        self._p = [] # a_func'(_c)
 
         self.verbose = True
-        self.print_length = 0
 
 
     def add_layer(self, layer):
@@ -149,12 +125,6 @@ class Perceptron(Sequential):
         self.print_length = len(out)+2
 
         print(out)
-
-        # if self.metric is not None:
-        #     idx_predictions = np.array([list(p).index(p.max()) for p in predictions])
-        #     idx_targets = np.array([list(t).index(t.max()) for t in targets])
-        #     current_accuracy = self.metric(idx_predictions, idx_targets)
-        #     out = out + ", {}={:.2f}".format(self.metric.__name__, current_accuracy)
 
     def save_model(self):
         directory = 'models'

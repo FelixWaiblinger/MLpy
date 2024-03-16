@@ -15,7 +15,7 @@ from mnist import MNIST
 def load_mnist(
         split='both',
         encode_labels=True,
-        download_path=os.path.join('datasets', 'MNIST')
+        download_path=os.path.join('datasets', 'mnist')
 ):
     if not os.path.exists(download_path):
         os.makedirs(download_path)
@@ -25,7 +25,7 @@ def load_mnist(
     if os.listdir(download_path) != mnist_folders:
         _download_mnist(download_path, mnist_folders)
     
-    data = MNIST("datasets/MNIST")
+    data = MNIST("datasets/mnist")
 
     if split in ['train', 'both']:
         x_train, y_train = data.load_training()
@@ -45,10 +45,12 @@ def load_mnist(
 
 
 def _download_mnist(path, folders):
-    mnist_urls = ['http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
-                  'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
-                  'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
-                  'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz']
+    mnist_urls = [
+        'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
+        'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
+        'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
+        'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
+    ]
     
     for i, url in enumerate(mnist_urls):
         # download files
