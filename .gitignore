@@ -1,2 +1,9 @@
-# python generated files
+# generated folders
+__pycache__/
+build/
+datasets/
+models/
+
+# generated files
 *.pyc
+*.egg-info/

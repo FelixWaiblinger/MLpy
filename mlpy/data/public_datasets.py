@@ -1,76 +1,101 @@
-"""
-Module containing a range of datasets commonly used in neural networks and
-    machine learning applications.
-"""
-
+"""Common datasets used in machine / deep learning applications."""
 
 import os
 import gzip
-import shutil
 import requests
 import numpy as np
-from mnist import MNIST
+
+from mlpy.types import Transform
 
 
-def load_mnist(
-        split='both',
-        encode_labels=True,
-        download_path=os.path.join('datasets', 'mnist')
-):
-    if not os.path.exists(download_path):
-        os.makedirs(download_path)
+class MNISTDataset:
+    def __init__(self,
+        local_path: str=os.path.join('datasets', 'mnist'),
+        transforms: Transform=None
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+        """If necessary, downloads and stores mnist dataset at given local
+            path, before loading it into memory.
 
-    mnist_folders = ['t10k-images-idx3-ubyte', 't10k-labels-idx1-ubyte',
-                     'train-images-idx3-ubyte', 'train-labels-idx1-ubyte']
-    if os.listdir(download_path) != mnist_folders:
-        _download_mnist(download_path, mnist_folders)
-    
-    data = MNIST("datasets/mnist")
+        Multiple instantiations of this class may lead to high memory
+            consumption.
 
-    if split in ['train', 'both']:
-        x_train, y_train = data.load_training()
-        x_train = np.asarray(x_train).astype(np.float32)
-        y_train = np.asarray(y_train).astype(np.float32)
-        if encode_labels: y_train = one_hot(y_train, 10)
-    
-    if split in ['test', 'both']:
-        x_test, y_test = data.load_testing()
-        x_test = np.asarray(x_test).astype(np.float32)
-        y_test = np.asarray(y_test).astype(np.float32)
-        if encode_labels: y_test = one_hot(y_test, 10)
-    
-    if split == 'train': return x_train, y_train
-    elif split == 'test': return x_test, y_test
-    else: return x_train, y_train, x_test, y_test
+        Args:
+            ``local_path``: The path to store / load the dataset to / from
 
+        Returns:
+            tuple: train and test split of the mnist dataset
+        """
 
-def _download_mnist(path, folders):
-    mnist_urls = [
-        'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
-        'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
-        'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
-        'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
-    ]
-    
-    for i, url in enumerate(mnist_urls):
-        # download files
-        r = requests.get(url, allow_redirects=True)
-        file = os.path.join(path, folders[i])
-        file_gz = file + '.gz'
+        num_train = 50_000
+        num_test = 10_000
+        image_size = 28
+        mnist_folders = [
+            'train-images-idx3-ubyte',
+            'train-labels-idx1-ubyte',
+            't10k-images-idx3-ubyte',
+            't10k-labels-idx1-ubyte'
+        ]
+
+        def _download_mnist(path, folders):
+            print("Downloading mnist dataset...")
+
+            mnist_urls = [
+                'http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz',
+                'http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz',
+                'http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz',
+                'http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz'
+            ]
+            
+            for i, url in enumerate(mnist_urls):
+                # download file
+                r = requests.get(url, allow_redirects=True)
+                file = os.path.join(path, folders[i])
+                file_gz = file + '.gz'
+                
+                # store file
+                with open(file_gz, 'wb') as f:
+                    f.write(r.content)
+
+        print("Checking directories...")
+        if not os.path.exists(local_path):
+            os.makedirs(local_path)
+
+        if sorted(os.listdir(local_path)) != mnist_folders:
+            _download_mnist(local_path, mnist_folders)
+
+        print("Loading dataset into memory...")
+
+        # train images
+        with gzip.open(os.path.join(local_path, mnist_folders[0]), 'rb') as f:
+            f.read(16) # first two bytes are irrelevant
+            buffer = f.read(image_size * image_size * num_train)
+            data = np.frombuffer(buffer, dtype=np.uint8).astype(np.float32)
+            x_train = data.reshape(num_train, image_size, image_size, 1)
+
+        # train labels
+        with gzip.open(os.path.join(local_path, mnist_folders[1]), 'rb') as f:
+            f.read(8) # first byte is irrelevant
+            buffer = f.read(num_train)
+            data = np.frombuffer(buffer, dtype=np.uint8).astype(np.int64)
+            y_train = data.reshape(num_train, image_size, image_size, 1)
+
+        # test images
+        with gzip.open(os.path.join(local_path, mnist_folders[2]), 'rb') as f:
+            f.read(16) # first two bytes are irrelevant
+            buffer = f.read(image_size * image_size * num_test)
+            data = np.frombuffer(buffer, dtype=np.uint8).astype(np.float32)
+            x_test = data.reshape(num_test, image_size, image_size, 1)
+
+        # test labels
+        with gzip.open(os.path.join(local_path, mnist_folders[3]), 'rb') as f:
+            f.read(8) # first byte is irrelevant
+            buffer = f.read(image_size * image_size * num_test)
+            data = np.frombuffer(buffer, dtype=np.uint8).astype(np.float32)
+            y_test = data.reshape(num_test, image_size, image_size, 1)
+
+        # TODO apply transforms
+        if transforms is not None:
+            print("Applying transforms...")
         
-        # store files
-        with open(file_gz, 'wb') as f:
-            f.write(r.content)
-
-        # unzip files
-        with gzip.open(file_gz, 'rb') as f_in, open(file, 'wb') as f_out:
-            shutil.copyfileobj(f_in, f_out)
-
-        os.remove(file_gz)
-
-
-def one_hot(y, num_classes):
-    targets = np.zeros((len(y), num_classes))
-    for i, t in enumerate(y):
-        targets[i][(int)(t)] = 1
-    return targets
+        print("Successfully loaded dataset!")
+        return x_train, y_train, x_test, y_test

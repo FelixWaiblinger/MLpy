@@ -7,8 +7,9 @@ from typing import Any
 
 # -------------------------------------------------------------------- Dataset
 class Dataset(ABC):
-    def __init__(self) -> None:
+    def __init__(self, in_memory: bool=False) -> None:
         """Abstract dataset class."""
+        self.in_memory = in_memory
 
     @abstractmethod
     def __getitem__(self, index):
@@ -17,6 +18,16 @@ class Dataset(ABC):
     @abstractmethod
     def __len__(self) -> int:
         """Return size of dataset."""
+
+
+# ------------------------------------------------------------------ Transform
+class Transform(ABC):
+    def __init__(self) -> None:
+        """Abstract transform class."""
+    
+    @abstractmethod
+    def __call__(self, images, labels):
+        """TODO"""
 
 
 # ----------------------------------------------------------------- Dataloader
@@ -34,19 +45,19 @@ class Network(ABC):
 
     @abstractmethod
     def forward(self, x):
-        """"""
+        """TODO"""
 
     @abstractmethod
     def backward(self, x):
-        """"""
+        """TODO"""
     
     @abstractmethod
     def save_model(self):
-        """"""
+        """TODO"""
 
     @abstractmethod
     def load_model(self):
-        """"""
+        """TODO"""
 
 
 # ---------------------------------------------------------------------- Layer
