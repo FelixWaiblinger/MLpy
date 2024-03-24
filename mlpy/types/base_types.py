@@ -2,7 +2,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, List
 
 
 # -------------------------------------------------------------------- Dataset
@@ -62,7 +62,7 @@ class Network(ABC):
 
 # ---------------------------------------------------------------------- Layer
 class Layer(ABC):
-    def __init__(self, layer_name="layer"):
+    def __init__(self, layer_name="layer") -> None:
         """Abstract base layer."""
         self.name = layer_name
         self.cache = None
@@ -96,5 +96,29 @@ class WeightInit(ABC):
         """Abstract weight initialization method."""
 
     @abstractmethod
-    def __call__(self, *args: Any, **kwds: Any) -> Any:
+    def __call__(self, *args: Any, **kwds: Any):
         """Initialize weights"""
+
+
+# ----------------------------------------------------------------------- Node
+class Node(ABC):
+    def __init__(self) -> None:
+        """Abstract node in a graph to be searched."""
+        self.neighbors = []
+
+    @abstractmethod
+    def idk(self):
+        pass
+
+
+# ----------------------------------------------------------------------- Node
+class Search(ABC):
+    def __init__(self, queue_type) -> None:
+        """Abstract search algorithm class."""
+        self.path = []
+        self.visited = []
+        self.frontier = queue_type
+
+    @abstractmethod
+    def find(self, start, end, max_iters=10000):
+        """Abstract method to find a path from start to end."""
