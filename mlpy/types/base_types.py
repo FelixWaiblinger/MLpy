@@ -2,7 +2,7 @@
 """
 
 from abc import ABC, abstractmethod
-from typing import Any, List
+from typing import Any, List, Dict
 
 
 # -------------------------------------------------------------------- Dataset
@@ -104,11 +104,8 @@ class WeightInit(ABC):
 class Node(ABC):
     def __init__(self) -> None:
         """Abstract node in a graph to be searched."""
-        self.neighbors = []
-
-    @abstractmethod
-    def idk(self):
-        pass
+        self.neighbors: List = []
+        self.data: Dict = {}
 
 
 # ----------------------------------------------------------------------- Node
@@ -120,5 +117,5 @@ class Search(ABC):
         self.frontier = queue_type
 
     @abstractmethod
-    def find(self, start, end, max_iters=10000):
+    def find(self, start, end, max_iters=10000) -> List[Node]:
         """Abstract method to find a path from start to end."""
