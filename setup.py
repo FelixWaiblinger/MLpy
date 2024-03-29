@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 import mlpy
 
 
-with open('README.md') as file:
+with open('README.md', 'r', encoding='utf-8') as file:
     readme = file.read()
 
 requirements = [
