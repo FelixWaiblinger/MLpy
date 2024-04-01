@@ -37,7 +37,7 @@ class Transform(ABC):
 class Dataloader(ABC):
     """Abstract dataloader class"""
 
-    def __init__(self) -> None:
+    def __init__(self, dataset: Dataset) -> None:
         """Instantiate dataloader"""
 
 

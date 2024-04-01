@@ -46,9 +46,9 @@ class BreadthFirst(Search):
             return [start]
 
         # limit loops and stop if no more nodes available
-        while max_iters > 0 and not self.frontier.empty():
+        while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.get()
+            node = self.frontier.pop()
 
             # check neighbors
             for child in node.neighbors:
@@ -64,6 +64,10 @@ class BreadthFirst(Search):
 
                 # extend search
                 self.frontier.put(child)
+            
+            # limit number of nodes explored
+            if max_iters < 1:
+                break
 
         # no goal found (within maximum iterations)
         return []
@@ -114,9 +118,9 @@ class UniformCost(Search):
             return [start]
 
         # limit loops and stop if no more nodes available
-        while max_iters > 0 and not self.frontier.empty():
+        while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.get()
+            node = self.frontier.pop()
 
             # check neighbors
             for child in node.neighbors:
@@ -132,6 +136,10 @@ class UniformCost(Search):
 
                 # extend search
                 self.frontier.put(child.cost, child)
+
+            # limit number of nodes explored
+            if max_iters < 1:
+                break
 
         # no goal found (within maximum iterations)
         return []
@@ -182,9 +190,9 @@ class GreedyBestFirst(Search):
             return [start]
 
         # limit loops and stop if no more nodes available
-        while max_iters > 0 and not self.frontier.empty():
+        while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.get()
+            node = self.frontier.pop()
 
             # check neighbors
             for child in node.neighbors:
@@ -201,6 +209,10 @@ class GreedyBestFirst(Search):
                 # extend search
                 self.frontier.put(child.heuristic, child)
 
+            # limit number of nodes explored
+            if max_iters < 1:
+                break
+
         # no goal found (within maximum iterations)
         return []
 
@@ -214,12 +226,16 @@ class GreedyBestFirst(Search):
 class DepthFirst(Search):
     """Depth First Search Algorithm"""
 
-    def __init__(self) -> None:
+    def __init__(self, max_depth: int=MAX_INT) -> None:
         """Instance of the depth first search algorithm for pathfinding in
         node based environments
+
+        Args:
+            ``max_depth``: Depth limit to turn this into Depth Limited Search
         """
 
         super().__init__(queue_type=LifoQueue())
+        self.max_depth = max_depth
 
     def find(self,
         start: Node,
@@ -248,10 +264,10 @@ class DepthFirst(Search):
         if start == end:
             return [start]
 
-        # limit loops and stop if no more nodes available
-        while max_iters > 0 and not self.frontier.empty():
+        # stop if no more nodes are available
+        while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.get()
+            node = self.frontier.pop()
 
             # check neighbors
             for child in node.neighbors:
@@ -267,6 +283,10 @@ class DepthFirst(Search):
 
                 # extend search
                 self.frontier.put(child)
+
+            # limit number of nodes explored
+            if max_iters < 1:
+                break
 
         # no goal found (within maximum iterations)
         return []
@@ -296,7 +316,7 @@ class IterativeDeepening(Search):
     ) -> List[Node]:
         """Use the iterative deepening search algorithm to find the path from
         a start node to the goal node, limited by a maximum number of nodes to
-        chec
+        check
 
         Args:
             ``start``: Initial node to start the search from
@@ -319,9 +339,9 @@ class IterativeDeepening(Search):
                 return [start]
 
             # limit loops and stop if no more nodes available
-            while max_iters > 0 and not self.frontier.empty():
+            while not self.frontier.empty():
                 max_iters -= 1
-                node = self.frontier.get()
+                node = self.frontier.pop()
 
                 # only explore nodes up to the current max depth
                 if node.depth > depth:
@@ -343,6 +363,10 @@ class IterativeDeepening(Search):
 
                     # extend search
                     self.frontier.put(child)
+
+                # limit number of nodes explored
+                if max_iters < 1:
+                    break
 
         # no goal found (within maximum iterations)
         return []
@@ -393,9 +417,9 @@ class AStar(Search):
             return [start]
 
         # limit loops and stop if no more nodes available
-        while max_iters > 0 and not self.frontier.empty():
+        while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.get()
+            node = self.frontier.pop()
 
             # check neighbors
             for child in node.neighbors:
@@ -411,6 +435,10 @@ class AStar(Search):
 
                 # extend search
                 self.frontier.put(child.cost + child.heuristic, child)
+
+            # limit number of nodes explored
+            if max_iters < 1:
+                break
 
         # no goal found (within maximum iterations)
         return []

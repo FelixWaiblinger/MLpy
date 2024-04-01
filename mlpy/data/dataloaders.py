@@ -1,9 +1,11 @@
-"""
-"""
+"""Dataloader"""
 
-from mlpy.types import Dataloader
+from mlpy.types import Dataset, Dataloader
 
 
+# ----------------------------------------------------------- Image Dataloader
 class ImageDataloader(Dataloader):
-    def __init__(self) -> None:
-        pass
+    """TODO"""
+
+    def __init__(self, dataset: Dataset) -> None:
+        """TODO"""

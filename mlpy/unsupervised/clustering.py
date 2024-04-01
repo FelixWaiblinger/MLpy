@@ -7,6 +7,8 @@ from mlpy.evaluation.metrics import MSE
 
 # --------------------------------------------------------- K-Nearest-neighbor
 class KNearestNeighbor:
+    """TODO"""
+
     def __init__(self,
         k: int,
         distance_func: callable=MSE,
@@ -34,5 +36,3 @@ class KNearestNeighbor:
 
     def predict(self, ) -> None:
         """TODO"""
-
-        pass
