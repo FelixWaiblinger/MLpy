@@ -123,6 +123,7 @@ class Node(ABC):
         self.depth: int = 0
         self.cost: float = 1
         self.heuristic: float = 1
+        self.info: Dict = {}
 
 
 # ----------------------------------------------------------------------- Node

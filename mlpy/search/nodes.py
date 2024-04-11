@@ -3,9 +3,14 @@
 from typing import List
 
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 
 from mlpy.types import Node
 
+
+OFFSETS = {'': 0, 'start': 0.41, 'end': 0.43}
+COLORS = {'': 'k', 'start': 'g', 'end': 'r'}
 
 # ---------------------------------------------------------------------- Graph
 class Graph:
@@ -122,7 +127,8 @@ class Grid:
             ``diagonal``: Whether diagonal movement is allowed
         """
 
-        self.nodes: np.ndarray = np.full(size, fill_value=Node(), dtype=Node)
+        w, h = range(size[0]), range(size[1])
+        self.nodes: np.ndarray = np.array([[Node() for _ in w] for _ in h])
 
         for i in range(size[0]):
             for j in range(size[1]):
@@ -147,7 +153,69 @@ class Grid:
                 if i > 0 and j > 0: # add top left neighbor
                     self.nodes[i, j].neighbors.append(self.nodes[i-1, j-1])
 
+    def __getitem__(self, key: int | tuple[int, int]) -> Node:
+        """Return the node at the given coordinates
+        
+        Args:
+            ``key``: grid coordinates
+        """
+
+        idx = key if isinstance(key, tuple) else (key, key)
+
+        return self.nodes[idx]
+
     @property
     def size(self) -> tuple[int, int]:
         """Return the size of this grid"""
+
         return self.nodes.shape
+
+    def set_start(self, key: int | tuple[int, int] | Node) -> None:
+        """Set a node as start node
+        
+        Args:
+            ``key``: grid coordinates or a reference to the node itself
+        """
+
+        node = key if isinstance(key, Node) else self[key]
+        node.info['type'] = 'start'
+
+    def set_end(self, key: int | tuple[int, int] | Node) -> None:
+        """Set a node as goal node
+        
+        Args:
+            ``key``: grid coordinates or a reference to the node itself
+        """
+
+        node = key if isinstance(key, Node) else self[key]
+        node.info['type'] = 'end'
+
+    def show(self, path: List[Node] | None=None) -> None:
+        """Plot this 2D grid with additional informations as specified in each
+        node
+        """
+
+        width, height = self.size
+        kwargs = {'linewidth': 2, 'edgecolor': 'k'}
+        _, ax = plt.subplots()
+
+        for i in range(width):
+            for j in range(height):
+                if path and self[i, j] in path:
+                    kwargs['facecolor'] = 'c'
+                else:
+                    kwargs['facecolor'] = 'none'
+
+                ax.add_patch(Rectangle((i, j), 1, 1, **kwargs))
+
+                node_type = self[i, j].info.get('type', '')
+                ax.text(
+                    i+OFFSETS[node_type],
+                    j+.45,
+                    node_type,
+                    color=COLORS[node_type]
+                )
+
+        plt.xticks(range(width+1), range(width+1))
+        plt.yticks(range(height+1), range(height+1))
+        plt.show()

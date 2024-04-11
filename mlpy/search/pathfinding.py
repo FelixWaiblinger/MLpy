@@ -48,7 +48,7 @@ class BreadthFirst(Search):
         # limit loops and stop if no more nodes available
         while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.pop()
+            node = self.frontier.get()
 
             # check neighbors
             for child in node.neighbors:
@@ -64,7 +64,7 @@ class BreadthFirst(Search):
 
                 # extend search
                 self.frontier.put(child)
-            
+
             # limit number of nodes explored
             if max_iters < 1:
                 break
@@ -74,8 +74,6 @@ class BreadthFirst(Search):
 
     def show(self, start, end, max_iters=10000) -> None:
         """TODO"""
-
-        # TODO
 
 
 # -------------------------------------------------------- Uniform Cost Search
@@ -120,7 +118,7 @@ class UniformCost(Search):
         # limit loops and stop if no more nodes available
         while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.pop()
+            node = self.frontier.get()
 
             # check neighbors
             for child in node.neighbors:
@@ -146,8 +144,6 @@ class UniformCost(Search):
 
     def show(self, start, end, max_iters=10000) -> None:
         """TODO"""
-
-        # TODO
 
 
 # --------------------------------------------------- Greedy Best First Search
@@ -192,7 +188,7 @@ class GreedyBestFirst(Search):
         # limit loops and stop if no more nodes available
         while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.pop()
+            node = self.frontier.get()
 
             # check neighbors
             for child in node.neighbors:
@@ -218,8 +214,6 @@ class GreedyBestFirst(Search):
 
     def show(self, start, end, max_iters=10000) -> None:
         """TODO"""
-
-        # TODO
 
 
 # --------------------------------------------------------- Depth First Search
@@ -267,7 +261,7 @@ class DepthFirst(Search):
         # stop if no more nodes are available
         while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.pop()
+            node = self.frontier.get()
 
             # check neighbors
             for child in node.neighbors:
@@ -293,8 +287,6 @@ class DepthFirst(Search):
 
     def show(self, start, end, max_iters=10000) -> None:
         """TODO"""
-
-        # TODO
 
 
 # ------------------------------------------------- Iterative Deepening Search
@@ -341,7 +333,7 @@ class IterativeDeepening(Search):
             # limit loops and stop if no more nodes available
             while not self.frontier.empty():
                 max_iters -= 1
-                node = self.frontier.pop()
+                node = self.frontier.get()
 
                 # only explore nodes up to the current max depth
                 if node.depth > depth:
@@ -373,8 +365,6 @@ class IterativeDeepening(Search):
 
     def show(self, start, end, max_iters=10000) -> None:
         """TODO"""
-
-        # TODO
 
 
 # -------------------------------------------------------------- A Star Search
@@ -419,7 +409,7 @@ class AStar(Search):
         # limit loops and stop if no more nodes available
         while not self.frontier.empty():
             max_iters -= 1
-            node = self.frontier.pop()
+            node = self.frontier.get()
 
             # check neighbors
             for child in node.neighbors:
@@ -445,5 +435,3 @@ class AStar(Search):
 
     def show(self, start, end, max_iters=10000) -> None:
         """TODO"""
-
-        # TODO

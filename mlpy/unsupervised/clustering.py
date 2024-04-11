@@ -5,8 +5,8 @@ import numpy as np
 from mlpy.evaluation.metrics import MSE
 
 
-# --------------------------------------------------------- K-Nearest-neighbor
-class KNearestNeighbor:
+# ----------------------------------------------------------- Nearest-neighbor
+class NearestNeighbor:
     """TODO"""
 
     def __init__(self,
