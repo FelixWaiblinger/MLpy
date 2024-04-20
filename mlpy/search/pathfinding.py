@@ -108,7 +108,8 @@ class UniformCost(Search):
             list: path to goal node or an empty list if goal was not reached
         """
 
-        self.frontier.put(start.cost, start)
+        start.info['priority'] = start.cost
+        self.frontier.put(start)
         self.visited[start] = None
 
         # start node is goal node
@@ -133,7 +134,8 @@ class UniformCost(Search):
                     return self._backtrack(start, end)
 
                 # extend search
-                self.frontier.put(child.cost, child)
+                child.info['priority'] = child.cost
+                self.frontier.put(child)
 
             # limit number of nodes explored
             if max_iters < 1:
@@ -178,7 +180,8 @@ class GreedyBestFirst(Search):
             list: path to goal node or an empty list if goal was not reached
         """
 
-        self.frontier.put(start.heuristic, start)
+        start.info['priority'] = start.heuristic
+        self.frontier.put(start)
         self.visited[start] = None
 
         # start node is goal node
@@ -203,7 +206,8 @@ class GreedyBestFirst(Search):
                     return self._backtrack(start, end)
 
                 # extend search
-                self.frontier.put(child.heuristic, child)
+                child.info['priority'] = child.heuristic
+                self.frontier.put(child)
 
             # limit number of nodes explored
             if max_iters < 1:
@@ -263,12 +267,17 @@ class DepthFirst(Search):
             max_iters -= 1
             node = self.frontier.get()
 
+            # only explore nodes up to the current max depth
+            if node.depth > self.max_depth:
+                continue
+
             # check neighbors
             for child in node.neighbors:
                 # avoid infinite loops
                 if child in self.visited:
                     continue
 
+                child.depth = node.depth + 1
                 self.visited[child] = node
 
                 # goal node found
@@ -323,42 +332,13 @@ class IterativeDeepening(Search):
         """
 
         for depth in range(self.max_depth):
-            self.frontier.put(start)
-            self.visited[start] = None
+            # perform depth first search at each max depth level
+            dfs = DepthFirst(max_depth=depth)
+            path = dfs.find(start, end, max_iters)
+            max_iters -= dfs.iterations
 
-            # start node is goal node
-            if start == end:
-                return [start]
-
-            # limit loops and stop if no more nodes available
-            while not self.frontier.empty():
-                max_iters -= 1
-                node = self.frontier.get()
-
-                # only explore nodes up to the current max depth
-                if node.depth > depth:
-                    continue
-
-                # check neighbors
-                for child in node.neighbors:
-                    child.depth = node.depth + 1
-
-                    # avoid infinite loops
-                    if child in self.visited:
-                        continue
-
-                    self.visited[child] = node
-
-                    # goal node found
-                    if child == end:
-                        return self._backtrack(start, end)
-
-                    # extend search
-                    self.frontier.put(child)
-
-                # limit number of nodes explored
-                if max_iters < 1:
-                    break
+            if path:
+                return path
 
         # no goal found (within maximum iterations)
         return []
@@ -399,7 +379,8 @@ class AStar(Search):
             list: path to goal node or an empty list if goal was not reached
         """
 
-        self.frontier.put(start.cost + start.heuristic, start)
+        start.info['priority'] = start.cost + start.heuristic
+        self.frontier.put(start)
         self.visited[start] = None
 
         # start node is goal node
@@ -424,7 +405,8 @@ class AStar(Search):
                     return self._backtrack(start, end)
 
                 # extend search
-                self.frontier.put(child.cost + child.heuristic, child)
+                child.info['priority'] = child.cost + child.heuristic
+                self.frontier.put(child)
 
             # limit number of nodes explored
             if max_iters < 1:

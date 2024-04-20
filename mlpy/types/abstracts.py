@@ -118,12 +118,14 @@ class Node(ABC):
     """Abstract traversable node"""
 
     def __init__(self) -> None:
-        """Instantiate node"""
         self.neighbors: List = []
         self.depth: int = 0
         self.cost: float = 1
         self.heuristic: float = 1
         self.info: Dict = {}
+
+    def __lt__(self, other):
+        return self.info['priority'] < other.info['priority']
 
 
 # ----------------------------------------------------------------------- Node
@@ -135,6 +137,7 @@ class Search(ABC):
         self.path: List = []
         self.visited: Dict = {}
         self.frontier = queue_type
+        self.iterations = 0
 
     @abstractmethod
     def find(self, start, end, max_iters=10000) -> List[Node]:

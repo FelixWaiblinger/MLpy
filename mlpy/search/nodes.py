@@ -9,8 +9,15 @@ from matplotlib.patches import Rectangle
 from mlpy.types import Node
 
 
-OFFSETS = {'': 0, 'start': 0.41, 'end': 0.43}
-COLORS = {'': 'k', 'start': 'g', 'end': 'r'}
+COLORS = {
+    '': 'none',
+    'start': 'tab:green',
+    'path_start': 'tab:blue',
+    'end': 'tab:red',
+    'path_end': 'tab:purple',
+    'path_': 'tab:cyan',
+    'blocked': 'tab:gray'
+}
 
 # ---------------------------------------------------------------------- Graph
 class Graph:
@@ -116,7 +123,8 @@ class Grid:
 
     def __init__(self,
         size: tuple[int, int],
-        diagonal: bool=False
+        diagonal: bool=False,
+        blocked: np.ndarray | None=None
     ) -> None:
         """Create a 2D grid with the given dimension initialized with empty
         nodes and movement along given directions
@@ -129,28 +137,43 @@ class Grid:
 
         w, h = range(size[0]), range(size[1])
         self.nodes: np.ndarray = np.array([[Node() for _ in w] for _ in h])
+        if blocked is None:
+            blocked = np.zeros_like(self.nodes, dtype=bool)
 
         for i in range(size[0]):
             for j in range(size[1]):
-                if i > 0: # add upper neighbor
+                # blocked cells
+                if blocked[i, j]:
+                    self.nodes[i, j].info['type'] = 'blocked'
+                    continue
+
+                # add upper neighbor
+                if i > 0 and not blocked[i-1, j]:
                     self.nodes[i, j].neighbors.append(self.nodes[i-1, j])
-                if j < size[1]-1: # add right neighbor
+                # add right neighbor
+                if j < size[1]-1 and not blocked[i, j+1]:
                     self.nodes[i, j].neighbors.append(self.nodes[i, j+1])
-                if i < size[0]-1: # add lower neighbor
+                # add lower neighbor
+                if i < size[0]-1 and not blocked[i+1, j]:
                     self.nodes[i, j].neighbors.append(self.nodes[i+1, j])
-                if j > 0: # add left neighbor
+                # add left neighbor
+                if j > 0 and not blocked[i, j-1]:
                     self.nodes[i, j].neighbors.append(self.nodes[i, j-1])
 
                 if not diagonal:
                     continue
 
-                if i > 0 and j < size[1]-1: # add upper right neighbor
+                # add upper right neighbor
+                if i > 0 and j < size[1]-1 and not blocked[i-1, j+1]:
                     self.nodes[i, j].neighbors.append(self.nodes[i-1, j+1])
-                if i < size[0]-1 and j < size[1]-1: # add lower right neighbor
+                # add lower right neighbor
+                if i < size[0]-1 and j < size[1]-1 and not blocked[i+1, j+1]:
                     self.nodes[i, j].neighbors.append(self.nodes[i+1, j+1])
-                if i < size[0]-1 and j > 0: # add lower left neighbor
+                # add lower left neighbor
+                if i < size[0]-1 and j > 0 and not blocked[i+1, j-1]:
                     self.nodes[i, j].neighbors.append(self.nodes[i+1, j-1])
-                if i > 0 and j > 0: # add top left neighbor
+                # add top left neighbor
+                if i > 0 and j > 0 and not blocked[i-1, j-1]:
                     self.nodes[i, j].neighbors.append(self.nodes[i-1, j-1])
 
     def __getitem__(self, key: int | tuple[int, int]) -> Node:
@@ -201,21 +224,18 @@ class Grid:
 
         for i in range(width):
             for j in range(height):
-                if path and self[i, j] in path:
-                    kwargs['facecolor'] = 'c'
-                else:
-                    kwargs['facecolor'] = 'none'
-
-                ax.add_patch(Rectangle((i, j), 1, 1, **kwargs))
-
+                # assign correct colors
                 node_type = self[i, j].info.get('type', '')
-                ax.text(
-                    i+OFFSETS[node_type],
-                    j+.45,
-                    node_type,
-                    color=COLORS[node_type]
-                )
+                if path and self[i, j] in path:
+                    node_type = 'path_' + node_type
+
+                kwargs['facecolor'] = COLORS[node_type]
+                ax.add_patch(Rectangle((i, j), 1, 1, **kwargs))
 
         plt.xticks(range(width+1), range(width+1))
         plt.yticks(range(height+1), range(height+1))
         plt.show()
+
+
+# ------------------------------------------------ Some Continuous Environment
+# TODO
