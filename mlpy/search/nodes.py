@@ -133,6 +133,8 @@ class Grid:
             ``size``: Shape of this grid
 
             ``diagonal``: Whether diagonal movement is allowed
+            
+            ``blocked``: Optional mask of blocked cells
         """
 
         w, h = range(size[0]), range(size[1])

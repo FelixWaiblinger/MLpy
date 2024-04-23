@@ -229,7 +229,7 @@ class DepthFirst(Search):
         node based environments
 
         Args:
-            ``max_depth``: Depth limit to turn this into Depth Limited Search
+            ``max_depth``: Optional depth limit to do Depth Limited Search
         """
 
         super().__init__(queue_type=LifoQueue())
@@ -305,6 +305,9 @@ class IterativeDeepening(Search):
     def __init__(self, max_depth: int=MAX_INT) -> None:
         """Instance of the iterative deepening search algorithm for
         pathfinding in node based environments
+
+        Args:
+            ``max_depth``: Optional depth limit to do Depth Limited Search
         """
 
         super().__init__(queue_type=LifoQueue())
